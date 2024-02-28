@@ -1,0 +1,100 @@
+
+
+	- Arhitektualni principi su pravila i smernice koji pogonuje odredjenu softversku arhitekturu. Ono sto donosi je
+
+		Maintainability - lak za odrzavanje izmene
+		Testability - testabilan
+		Loose coupling - postoji slaba sprega izmedju komponenti.
+		
+	Najvazniji principi softverske arhitekture su 
+	
+		Separation of concerns - Clean archi razdvaja core domen od spoljnih zavisnosti (database, UI).
+		Encapsulation - sakrivanje informacija od ostalih komponenti u sistemu i takodje izolacija komponente od ostalih komponenti u sistemu
+		Dependency inversion - Zelimo da zavisimo od apstrakcije u vremenu kompilacije i same implementacije u trenutku izvrsavanja.
+		Explicit dependencies - Komponente moraju biti iskrene o njihovim zavisnostima koje su potrebne da bi radile ispravno. Poboljsava stailnost komponenti.
+		Single responsibility - Komponente treba da imaju samo jedno svrhu , jedno zaduzenje. I da takodje trebaju da imaju jedan razlog za promenu. Ovaj
+								princip promovise granularno dizajniranje komponenti i takodje inapredjuje stailnost.
+		DRY - dont repeat yourself. KOji se fokusuje na smanjenju dupliranog koda enkapsulacijaom ponasanja koji se ponavlja.
+		Persistance ignorance - Kako organizujemo domenske entitete, i to bi trebali uraditi na taj nacin da nije bitno koju persistence tehnologiju koristimo ispod haube.
+								Tako da nasi entiteti mogu se cuvati u sql bazi , dokument bazi , ili key value store. Ove odluke ne bi smelo da imaju ikakvog uticaja kako
+								modelujemo domenske entitete.
+		Bounded context - princip koji dolazi iz DDD , prestavlja konceptualno model grupisanje slicnih entiteta i ponasanja. U nekim slucajevima mozemo iamti vise bounded contexta
+		
+	Dependency inversion:
+	
+	Unutrasnji slojevi definisu interfejse , spoljasni slojevi implementiraju ih. Svaki sloj je zavisan samo od sloja ispod i moze da komunicira sanjim. 
+	On nema prestavu o slojevima iznad njega.
+	
+	Domain -> Application-> Infrastructure  (infrastructure i presentation su na istom lefelu i oni mogu da komuniciraju emdjusobno, oni su na istom nivou.)
+						 -> Presentation
+	- Clean architecture prestavlja domain evaluaciju (centralono domenski pristup za organizovanje zavisnosti i slojeva). Similar architecture.
+	- Onion architecture, hexagonal architecture.
+	
+	Kada korsititi CA
+	DDD - je nesto sto ide u ruku pod ruku sa CA.
+	Complex business logic 
+	Visoko testabilni projekti
+	
+	Domain layer je centralni sloj u clean arhitekturi.
+		- Entities
+		- Value objects
+		- Domain events
+		- Domain services 
+		- Interfaces - razlciite apstrakcije koje su neophodne za sam domen
+		- Custom excaptions
+		- Enums
+		
+	Application layer je sloj iznad domena koji je zaduzen za 
+		- Orkestraciju domena 
+		- Sadrzi biznis loguku koja ne pripada domen sloju
+		- Definise slucajeve koriscenja aplikacije, koji su pokretaci ponasanja u nasoj aplikaciji.
+		= Implementacija se definise u application servisima
+		- CQRS (Command Query Responsibility Segregation) koriscenjem MediatR
+	
+	Infrastructure sloj - sve sto ima veze sa external sistemima
+		- Baze
+		- Messaging (RabbitMq , Kafka)
+		- Email porviders
+		- Storage services
+		- Identity
+		- System Clock
+		
+	Presentation layer - sloj koji se ponasa i koji definise ulaznu tacku u nasem sistemu
+		- Rest API build sa .NET 7
+		= API endpoints
+		- Middleware
+		- DI setup
+	
+	Entiti je objekat u nasem domenu koji zadovoljava dva vazna kvaliteta. 
+		- Identitet - nesto sto nam govori da je to specifican objekat i sto ga jedinstveno definise
+		- Continious - sto znaci da postojanje ovog objekta je vazno kroz citav zivotni vek nase aplikacije 
+					   i zbog toga sto ima identitet moze da se menja tokom vremena.
+		
+		
+	Problem Adrese (primer) - inicijalno nam se sacinjavalo od 5 string polja (Country, State ...) Svi su bili string.
+							  problematika stringa je sto ne prenosi nikakvo znacenje (nemamo tip adrese koja moze da nam prestavlja znacenje)
+	
+	Za to cemo uvesti Value objects koji ce prestavljati Adresu ... Sam objekat ima svoej stanje, svoja pravila i sva njena logika je enkapsuluirana unutar objekta
+		
+		Record ili klasa koja mora da implementira operatore jednakosti. (Rekord sve vec to ima samim tim je bolja opcija)
+							  
+	Value object - je jedinstveno odredjen (identifikovan) po njihovoj vrednosti (Za razliku od entiteta koji imaju svoj identifikator) sto znaci da ima 
+				   strukturalnu jednakost sto je jedna od karakteristika koji record podrzava. Drugi kvalitet koji zelimo u nasim value objects je immutability i
+				   record takodje zadovoljava to , tako da records je odlican fit za izgradnju i prestavljanje Value Objects
+	
+	DDD (Private Set) - zasto imamo private set propertije. Razlog tome je da ne zelimo da dozvolimo da bilo koja vrednost unutar nasih entiteta da budu promenljiva izvan scope-a samog entiteta.
+		  Na taj nacin krsimo invarijante koje su vec nametnute nasim odbranbenim dizajnom.
+		
+		(Static Factory Create Method) - Nas konstruktor postaje private, a kao nacin kreiranje uvodimo factory create metod. Postavlja se ptianje zasto ovo radimo , i zasto obmotavamo sam konstruktor.
+			Postoje nekoliko benefita koriscenjem ovog pristupa. Prva je da sakrivamo konstruktor koji moze imati neke druge detalje implementacije koje ne zelimo da exposujemo vam naseg entiteta.
+			Drugi razlog je enkapsulacija, stvarni razlog je da zelimo da ovime ubacimo neke side efekte unutar factory-ija koje ne pripadaju prirodno u samom konstuktoru. Domain Events is some case.
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
