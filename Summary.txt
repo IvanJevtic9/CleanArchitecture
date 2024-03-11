@@ -89,8 +89,42 @@
 			Postoje nekoliko benefita koriscenjem ovog pristupa. Prva je da sakrivamo konstruktor koji moze imati neke druge detalje implementacije koje ne zelimo da exposujemo vam naseg entiteta.
 			Drugi razlog je enkapsulacija, stvarni razlog je da zelimo da ovime ubacimo neke side efekte unutar factory-ija koje ne pripadaju prirodno u samom konstuktoru. Domain Events is some case.
 		
+	Application layer - glavne brige
+		- Slucajevi koriscenja = CQRS + MediatR
+		- Cross cutting concerns - Logging, Validation
+		- Exceptions
+		- DI konfiguracija
 		
+	CQRS - Beneficije - Razdvaja odgovornosti pisanja podataka od citanja u odvojene klase (objekte)
+	
+	Pros:
+		- Single responsibility principle - Svaki query ili komanda je odgovorna za samo jednu stvar.
+		- Interface segregation principle - Treba da zavisimo samo od metoda koje zapravo koristimo. kada govorimo o CQRS i MEdiatR imacemo jedan Handle metod koji ce procesuirati naredbu.
+		- Dekorator pattern - Mediator pipeline.
+		- Loose coupling - Command i command handlers ne moraju da budu svesni jedno drugog. Mediator je taj koji ih povezuje. Nije potrebno kreirati Command Handler i pozivati Handle metodu.
+						   Ovo je dobro i sa strane korisnika , koji mora samo da zna za komandu i query, i kako da publishuje koriscenjem mediatR-a.
+	Cons:
+		- Indirection (zaobilazak) - Teze je razumeti koja klasa hendluje koji request. 
+	
+	U cistoj arhitekturi, ne zelimo da imamo bilo kakvu external brigu kao deo naseg application sloja. Sa Koriscenjem Dappera zajedno sa Query handlerima dodaje dosta vrednosti.
+	
+	Infrastructure layer - zaduzen je za bilo koji external stavri kao sto su database, message brokers , identity , storage providers and so on.
+		- EF Core 
+			DbContext
+			Entity configurations
+			Repositories
+		- Optimistic concurrency 
+		- Publishing Domain events
 		
+	- Podrska za optimistic concurrency u nasoj aplikaciji.
+		Cesto u mnogim scenarijama baze se koriste konkurentno od strane vise aplikacija. Svaka od njih pravi izmene na podatke nezavisno jedna od druge. Kada se isti podaci modifikuju u isto vreme,
+		nekonizstentnost i pogresni podaci mogu da se dese.
+		
+		[Timestamp]
+		public byte[] Version { get; set; } - uvodjenjem novog polja (concurrency token - verzija tog reda), koji se popunjava i prati kada je entitet dovucen iz baze. Onda kada se update ili delete operacija 
+											izvrsavanja tokom SaveChanges(), vrednost concurrency tokena se poredi sa originalnom vrednoscu prociganog od strane EF Core-a, ukoliko je razlicito operacija se stopira.
+											SQL Server konfigurise ovo polje (token) automatski (menja vrednost) svaki put kada se ovaj red promeni. Operacija se stopira, a zauzvrat se throw-uje 
+											DBUpdateConcurrencyException.
 		
 		
 		
