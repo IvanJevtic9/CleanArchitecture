@@ -124,11 +124,32 @@
 		public byte[] Version { get; set; } - uvodjenjem novog polja (concurrency token - verzija tog reda), koji se popunjava i prati kada je entitet dovucen iz baze. Onda kada se update ili delete operacija 
 											izvrsavanja tokom SaveChanges(), vrednost concurrency tokena se poredi sa originalnom vrednoscu prociganog od strane EF Core-a, ukoliko je razlicito operacija se stopira.
 											SQL Server konfigurise ovo polje (token) automatski (menja vrednost) svaki put kada se ovaj red promeni. Operacija se stopira, a zauzvrat se throw-uje 
-											DBUpdateConcurrencyException.
+											DBUpdateConcurrencyException. builder.Property<uint>("Version").IsRowVersion().
+	
+	Presentation layer - se ponasa kao entry point naseg sistema , REST API , gdrpc service ili single page application. Prihvata request, pakuje ih u query ili komandu i salje preko mediatR na app layer.
+		- Controllets
+		- Middleware
+		- DI setup
+		- Docker compose
+	
+	Authentification - part of Infrastructure layer
+		- External identity provider
+		- Keycloak - jwt bearer auth
+		- .Net integration
 		
-		
-		
-		
+	Autentifikacija je proces ustanovljenja identiteta usera koji je napravio request a autorizacija proces kojim utvrdjujemo da li on ima prava da taj request napravi.
+	
+	Authorization - part of Infrastructure layer
+		Role authorization - na osnovu role koji dolelimo nekom useru (dal prilikom reiggstracije ili cega vec)
+		Permissions authorization - naprednija vrsta autorizacije, kada mozemo da primenjujemo polise. Sa ovom vrstom autorizacije mozemo praviti vise kastomizovane autorizacije. (Da li user ima dovoljno godina ...)
+		Resource-based authorization - ako je user nosilac tog resursa (user moze da pristupi narudbini ako je on nosilac)
+	
+	Permisije mogu da se vezuju za Rolu , mogu da se vezuju na samog user-a.
+	
+	
+	
+	
+	
 		
 		
 		

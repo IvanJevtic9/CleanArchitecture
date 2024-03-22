@@ -21,13 +21,17 @@ if (app.Environment.IsDevelopment())
 
     app.ApplyMigrations();
 
-    //REMARK: Uncomment if you want to seed initial data.
-    //app.SeedData();
+    // REMARK: Uncomment if you want to seed initial data.
+    // app.SeedData();
 }
 
 app.UseHttpsRedirection();
 
 app.UseCustomExceptionHandler();
+
+app.UseAuthentication();
+
+app.UseAuthorization();
 
 app.MapControllers();
 
