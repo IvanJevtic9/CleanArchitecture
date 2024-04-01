@@ -1,4 +1,6 @@
-﻿using Bookify.Application.Reviews.AddReview;
+﻿using Asp.Versioning;
+using Bookify.Application.Reviews.AddReview;
+using Bookify.Domain.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +9,8 @@ namespace Bookify.Api.Controllers.Reviews;
 
 [Authorize]
 [ApiController]
-[Route("api/reviews")]
+[ApiVersion(ApiVersions.V1)]
+[Route("api/v{version:apiVersion}/reviews")]
 public class ReviewsController : ControllerBase
 {
     private readonly ISender _sender;
@@ -22,7 +25,7 @@ public class ReviewsController : ControllerBase
     {
         var command = new AddReviewCommand(request.BookingId, request.Rating, request.Comment);
 
-        var result = await _sender.Send(command, cancellationToken);
+        Result result = await _sender.Send(command, cancellationToken);
 
         if (result.IsFailure)
         {
